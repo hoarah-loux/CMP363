@@ -1,35 +1,15 @@
-fastapi==0.127.0                # Latest FastAPI release from Dec 2025 :contentReference[oaicite:0]{index=0}
-sqlalchemy==2.0.45              # Latest SQLAlchemy release (Dec 2025) :contentReference[oaicite:1]{index=1}
-alembic==1.17.2                 # Latest Alembic release (Nov 2025) :contentReference[oaicite:2]{index=2}
-pydantic[email]==2.12.5         # Latest Pydantic (2.12.5) with email extra :contentReference[oaicite:3]{index=3}
-python-multipart==0.0.18        # Latest python-multipart (used by many projects) :contentReference[oaicite:4]{index=4}
-PyJWT==2.8.0                    # Use PyJWT instead of python-jose for token handling
-pyhumps==1.6.1                  # Latest pyhumps version (unchanged at 1.6.1)  
-bcrypt==4.2.0                   # Latest bcrypt release used (e.g., by other projects) :contentReference[oaicite:6]{index=6}
-passlib[bcrypt]==1.7.4          # Latest stable Passlib with bcrypt support :contentReference[oaicite:7]{index=7}
-uvicorn[standard]==0.22.0
-aiosqlite==0.19.0
-httpx==0.24.0
 aio-pika==9.5.8
-fastapi==0.127.0
-sqlalchemy==2.0.45
-alembic==1.17.2
-pydantic[email]==2.12.5
-python-multipart==0.0.18
-httpx==0.24.0
-asyncpg
-uvicorn[standard]==0.22.0
 aiosqlite==0.19.0
-pydantic-settings==2.12.0
-aio-pika==9.5.8
-fastapi==0.127.0
-sqlalchemy==2.0.45
 alembic==1.17.2
-pydantic[email]==2.12.5
-python-multipart==0.0.18
-httpx==0.24.0
 asyncpg==0.30.0
-uvicorn[standard]==0.22.0
-aiosqlite==0.19.0
+bcrypt==4.2.0                   # Latest bcrypt release used (e.g., by other projects) :contentReference[oaicite:6]{index=6}
+fastapi==0.127.0
+httpx==0.24.0
+passlib[bcrypt]==1.7.4          # Latest stable Passlib with bcrypt support :contentReference[oaicite:7]{index=7}
+pydantic[email]==2.12.5
 pydantic-settings==2.12.0
-aio-pika==9.5.8
+pyhumps==1.6.1                  # Latest pyhumps version (unchanged at 1.6.1)  
+PyJWT==2.8.0                    # Use PyJWT instead of python-jose for token handling
+python-multipart==0.0.18
+sqlalchemy==2.0.45
+uvicorn[standard]==0.22.0
