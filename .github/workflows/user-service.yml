@@ -126,31 +126,32 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # Uncomment this job when you're ready to deploy to Kubernetes
-  # deploy:
-  #   name: Deploy to Kubernetes
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   if: github.ref == 'refs/heads/main'
-  #   
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Set up kubectl
-  #       uses: azure/setup-kubectl@v3
-  #
-  #     - name: Configure kubectl
-  #       run: |
-  #         echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
-  #         export KUBECONFIG=kubeconfig
-  #
-  #     - name: Update deployment image
-  #       run: |
-  #         kubectl set image deployment/user-service \
-  #           user-service=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-  #           --record
-  #
-  #     - name: Wait for rollout
-  #       run: |
-  #         kubectl rollout status deployment/user-service
+  deploy:
+    name: Deploy to OpenShift
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install oc CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: latest
+
+      - name: Log in to OpenShift
+        run: |
+          oc login --token=${{ secrets.OPENSHIFT_TOKEN }} --server=${{ secrets.OPENSHIFT_SERVER }}
+
+      - name: Update deployment image
+        run: |
+          oc set image deployment/user-service \
+            user-service=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -n ${{ secrets.OPENSHIFT_NAMESPACE }} \
+            --record
+
+      - name: Wait for rollout
+        run: |
+          oc rollout status deployment/user-service -n ${{ secrets.OPENSHIFT_NAMESPACE }}
