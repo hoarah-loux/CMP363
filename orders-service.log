@@ -1,0 +1,3 @@
+nohup: ignoring input
+INFO:     Will watch for changes in these directories: ['/home/hoarahloux/University/CMPE363/project']
+ERROR:    [Errno 98] Address already in use

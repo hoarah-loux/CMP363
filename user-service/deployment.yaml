@@ -1,0 +1,131 @@
+# =========================
+# user-db PVC
+# =========================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+# =========================
+# user-db Deployment
+# =========================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-db
+  template:
+    metadata:
+      labels:
+        app: user-db
+    spec:
+      containers:
+        - name: user-db
+          image: postgres:15
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: userdb
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: user-db-pvc
+      volumes:
+        - name: user-db-pvc
+          persistentVolumeClaim:
+            claimName: user-db-pvc
+
+---
+# =========================
+# user-db Service
+# =========================
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-db
+spec:
+  selector:
+    app: user-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+
+---
+# =========================
+# user-service Deployment
+# =========================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: default-route-openshift-image-registry.apps.rm3.7wse.p1.openshiftapps.com/hoarah-loux-dev/user-service:v3
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8001
+          env:
+            - name: DATABASE_URL
+              value: postgresql://user:password@user-db:5432/userdb
+            - name: POSTGRES_URI
+              value: postgresql+asyncpg://user:password@user-db:5432/userdb
+            - name: RABBITMQ_URL
+              value: "amqp://guest:guest@rabbitmq:5672/"
+            - name: RABBITMQ_EXCHANGE
+              value: "users"
+            - name: FIRST_USER_EMAIL
+              value: admin@example.com
+            - name: FIRST_USER_PASSWORD
+              value: admin_pass
+          readinessProbe:
+            httpGet:
+              path: /api/v1/users/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+---
+# =========================
+# user-service Service
+# =========================
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+    - name: http
+      port: 8001
+      targetPort: 8001
